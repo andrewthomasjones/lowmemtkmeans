@@ -7,6 +7,8 @@ Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
 Description: More about what it does (maybe more than one line)
 License: GNU GENERAL PUBLIC LICENSE
 LazyData: TRUE
-LinkingTo:  Rcpp, RcppArmadillo
-Imports: Rcpp (>= 0.12.5)
+LinkingTo: Rcpp, RcppArmadillo
+Imports:
+    Rcpp (>= 0.12.5)
 SystemRequirements: C++11
+RoxygenNote: 5.0.1
