@@ -9,3 +9,4 @@ License: GNU GENERAL PUBLIC LICENSE
 LazyData: TRUE
 LinkingTo:  Rcpp, RcppArmadillo
 Imports: Rcpp (>= 0.12.5)
+SystemRequirements: C++11

@@ -6,13 +6,159 @@
 
 using namespace Rcpp;
 
-// useAuto
-int useAuto();
-RcppExport SEXP tkmeans_useAuto() {
+// Mahalanobis
+arma::vec Mahalanobis(arma::mat x, arma::rowvec center, arma::mat cov);
+RcppExport SEXP tkmeans_Mahalanobis(SEXP xSEXP, SEXP centerSEXP, SEXP covSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    __result = Rcpp::wrap(useAuto());
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type center(centerSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type cov(covSEXP);
+    __result = Rcpp::wrap(Mahalanobis(x, center, cov));
+    return __result;
+END_RCPP
+}
+// dmvnorm_arma
+arma::vec dmvnorm_arma(arma::mat x, arma::rowvec mean, arma::mat sigma, bool log);
+RcppExport SEXP tkmeans_dmvnorm_arma(SEXP xSEXP, SEXP meanSEXP, SEXP sigmaSEXP, SEXP logSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type mean(meanSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< bool >::type log(logSEXP);
+    __result = Rcpp::wrap(dmvnorm_arma(x, mean, sigma, log));
+    return __result;
+END_RCPP
+}
+// distCentre
+arma::vec distCentre(int n_cluster, arma::mat ui, arma::mat centres, double lambda, int d);
+RcppExport SEXP tkmeans_distCentre(SEXP n_clusterSEXP, SEXP uiSEXP, SEXP centresSEXP, SEXP lambdaSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int >::type n_cluster(n_clusterSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type ui(uiSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type centres(centresSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    __result = Rcpp::wrap(distCentre(n_cluster, ui, centres, lambda, d));
+    return __result;
+END_RCPP
+}
+// distCentre2
+arma::vec distCentre2(int n_cluster, arma::mat ui, arma::mat centres, double lambda, int d);
+RcppExport SEXP tkmeans_distCentre2(SEXP n_clusterSEXP, SEXP uiSEXP, SEXP centresSEXP, SEXP lambdaSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int >::type n_cluster(n_clusterSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type ui(uiSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type centres(centresSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    __result = Rcpp::wrap(distCentre2(n_cluster, ui, centres, lambda, d));
+    return __result;
+END_RCPP
+}
+// distCentre3
+arma::vec distCentre3(int n_cluster, arma::mat ui, arma::mat centres, double lambda, int d);
+RcppExport SEXP tkmeans_distCentre3(SEXP n_clusterSEXP, SEXP uiSEXP, SEXP centresSEXP, SEXP lambdaSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int >::type n_cluster(n_clusterSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type ui(uiSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type centres(centresSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    __result = Rcpp::wrap(distCentre3(n_cluster, ui, centres, lambda, d));
+    return __result;
+END_RCPP
+}
+// max_index
+int max_index(arma::vec x);
+RcppExport SEXP tkmeans_max_index(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    __result = Rcpp::wrap(max_index(x));
+    return __result;
+END_RCPP
+}
+// min_index
+int min_index(arma::vec x);
+RcppExport SEXP tkmeans_min_index(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    __result = Rcpp::wrap(min_index(x));
+    return __result;
+END_RCPP
+}
+// init_centres
+arma::mat init_centres(arma::mat M, int n_cluster);
+RcppExport SEXP tkmeans_init_centres(SEXP MSEXP, SEXP n_clusterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::mat >::type M(MSEXP);
+    Rcpp::traits::input_parameter< int >::type n_cluster(n_clusterSEXP);
+    __result = Rcpp::wrap(init_centres(M, n_cluster));
+    return __result;
+END_RCPP
+}
+// tkmeans_lowmem
+arma::mat tkmeans_lowmem(arma::mat& M, int n_cluster, double alpha, int nstart, int iter);
+RcppExport SEXP tkmeans_tkmeans_lowmem(SEXP MSEXP, SEXP n_clusterSEXP, SEXP alphaSEXP, SEXP nstartSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::mat& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< int >::type n_cluster(n_clusterSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type nstart(nstartSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    __result = Rcpp::wrap(tkmeans_lowmem(M, n_cluster, alpha, nstart, iter));
+    return __result;
+END_RCPP
+}
+// scale_lowmem
+arma::mat scale_lowmem(arma::mat& M);
+RcppExport SEXP tkmeans_scale_lowmem(SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::mat& >::type M(MSEXP);
+    __result = Rcpp::wrap(scale_lowmem(M));
+    return __result;
+END_RCPP
+}
+// BIC_lowmem
+double BIC_lowmem(arma::mat& centres, arma::mat& data);
+RcppExport SEXP tkmeans_BIC_lowmem(SEXP centresSEXP, SEXP dataSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::mat& >::type centres(centresSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type data(dataSEXP);
+    __result = Rcpp::wrap(BIC_lowmem(centres, data));
+    return __result;
+END_RCPP
+}
+// tmeansClust_lowmem
+arma::uvec tmeansClust_lowmem(arma::mat& data, arma::mat& centres);
+RcppExport SEXP tkmeans_tmeansClust_lowmem(SEXP dataSEXP, SEXP centresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::mat& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type centres(centresSEXP);
+    __result = Rcpp::wrap(tmeansClust_lowmem(data, centres));
     return __result;
 END_RCPP
 }
