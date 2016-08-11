@@ -1,1 +1,3 @@
+useDynLib(tkmeans)
+importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
