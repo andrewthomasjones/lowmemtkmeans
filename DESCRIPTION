@@ -1,10 +1,10 @@
 Package: tkmeans
 Type: Package
-Title: Trimmed K-means with low memory use
+Title: Trimmed K-means
 Version: 0.1.0
 Author: Andrew Thomas Jones
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
-Description: More about what it does (maybe more than one line)
+Description: Peforms the Trimmed K-means clustering algorithm with lower memory use.
 License: GNU GENERAL PUBLIC LICENSE
 LazyData: TRUE
 LinkingTo: Rcpp, RcppArmadillo
