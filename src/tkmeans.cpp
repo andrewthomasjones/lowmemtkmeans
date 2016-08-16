@@ -3,6 +3,8 @@
 using namespace Rcpp;
 // [[Rcpp::plugins(cpp11)]]
 
+//'@importFrom Rcpp sourceCpp
+//'@useDynLib tkmeans
 
 
 
