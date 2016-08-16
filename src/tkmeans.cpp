@@ -1,6 +1,10 @@
+//[[Rcpp::depends(RcppArmadillo)]]
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 // [[Rcpp::plugins(cpp11)]]
+
+
+
 
 // constructing priority queues
 #include <iostream>
@@ -26,7 +30,7 @@ public:
 
 
 
-// [[Rcpp::export]]
+
 arma::vec Mahalanobis(arma::mat x, arma::rowvec center, arma::mat cov) {
   int n = x.n_rows;
   arma::mat x_cen;
@@ -38,7 +42,7 @@ arma::vec Mahalanobis(arma::mat x, arma::rowvec center, arma::mat cov) {
 }
 
 
-// [[Rcpp::export]]
+
 arma::vec dmvnorm_arma(arma::mat x, arma::rowvec mean, arma::mat sigma, bool log = false) {
   arma::vec distval = Mahalanobis(x,  mean, sigma);
   double logdet = sum(arma::log(arma::eig_sym(sigma)));
@@ -52,7 +56,7 @@ arma::vec dmvnorm_arma(arma::mat x, arma::rowvec mean, arma::mat sigma, bool log
 }
 
 
-// [[Rcpp::export]]
+
 arma::vec distCentre(int n_cluster, arma::mat ui, arma::mat centres, double lambda, int d){
   //set up sigma
   arma::vec sigmaDiag(d);  sigmaDiag.fill(lambda);
@@ -69,7 +73,7 @@ arma::vec distCentre(int n_cluster, arma::mat ui, arma::mat centres, double lamb
   return(dist);
 }
 
-// [[Rcpp::export]]
+
 arma::vec distCentre2(int n_cluster, arma::mat ui, arma::mat centres, double lambda, int d){
 
   //store distances
@@ -84,14 +88,14 @@ arma::vec distCentre2(int n_cluster, arma::mat ui, arma::mat centres, double lam
   return(dist);
 }
 
-// [[Rcpp::export]]
+
 arma::vec distCentre3(int n_cluster, arma::mat ui, arma::mat centres, double lambda, int d){
   arma::vec dist = arma::sqrt(arma::sum(arma::pow(centres - repmat(ui,n_cluster,1), 2.0),1));
   return(dist);
 }
 
 
-// [[Rcpp::export]]
+
 int max_index(arma::vec x){
 
   //returns index of biggest value in x.
@@ -103,7 +107,7 @@ int max_index(arma::vec x){
 }
 
 
-// [[Rcpp::export]]
+
 int min_index(arma::vec x){
 
   //returns index of biggest value in x.
@@ -115,7 +119,7 @@ int min_index(arma::vec x){
 }
 
 
-// [[Rcpp::export]]
+
 arma::mat init_centres(arma::mat M, int n_cluster){
   int n = size(M)[0];
   int d = size(M)[1];
@@ -134,9 +138,18 @@ arma::mat init_centres(arma::mat M, int n_cluster){
   return cent;
 }
 
-
+//'Performs trimmed k-means clustering algorithm on a matrix of data. Each row is an observation.
+//'
+//'@param M matrix of data to be clustered
+//'@param n_cluster number of clusters
+//'@param alpha proportion of data to be trimmed
+//'@param nstart number of restarts
+//'@param iter maximum number of iterations
+//'@param tol convergence criteria
+//'@return matrix of cluster centres
+//'@export
 // [[Rcpp::export]]
-arma::mat tkmeans_lowmem(arma::mat& M, int n_cluster , double alpha, int nstart, int iter){
+arma::mat tkmeans_lowmem(arma::mat& M, int n_cluster , double alpha, int nstart, int iter, double tol){
   int n = size(M)[0];
   int d = size(M)[1];
 
@@ -147,7 +160,7 @@ arma::mat tkmeans_lowmem(arma::mat& M, int n_cluster , double alpha, int nstart,
   arma::mat means = centres;
 
   double lambda = 1;
-  double tol = 0.001;
+  //double tol = 0.001;
   double diff = 1;
   int m=0;
 
@@ -235,7 +248,11 @@ arma::mat tkmeans_lowmem(arma::mat& M, int n_cluster , double alpha, int nstart,
   return means;
 }
 
-
+//'Recales each row to have mean 0 and sd 1.
+//'
+//'@param M matrix of data
+//'@return first row mean shifts, second row sd so that scaling can be undone. Scales original matrix in place
+//'@export
 // [[Rcpp::export]]
 arma::mat scale_lowmem(arma::mat& M){
   arma::rowvec means = mean(M);
@@ -253,9 +270,14 @@ arma::mat scale_lowmem(arma::mat& M){
   return means_sds;
   }
 
-
+//'Calculates BIC for a given clustering.
+//'
+//'@param data matrix of data
+//'@param centres matrix of cluster means
+//'@return BIC value
+//'@export
 // [[Rcpp::export]]
-double  BIC_lowmem(arma::mat& centres, arma::mat& data){
+double  BIC_lowmem(arma::mat& data, arma::mat& centres){
           int x = data.n_rows;
           int m = centres.n_cols;
           int k = centres.n_rows;
@@ -298,6 +320,13 @@ double  BIC_lowmem(arma::mat& centres, arma::mat& data){
   return -2*log_like_accum  + log(x)*(m*k + k - 1);
 }
 
+
+//'Allocates each Row (observation) in data to the nearest cluster centre.
+//'
+//'@param data matrix of data to be clustered
+//'@param centres set of cluster means
+//'@return vector of cluster allocations
+//'@export
 // [[Rcpp::export]]
 arma::uvec tmeansClust_lowmem(arma::mat& data, arma::mat& centres){
   int n_cluster =  centres.n_rows;
