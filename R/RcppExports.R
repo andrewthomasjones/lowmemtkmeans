@@ -17,8 +17,8 @@ tkmeans_lowmem <- function(M, n_cluster, alpha, nstart, iter, tol) {
 
 #'Recales each row to have mean 0 and sd 1.
 #'
-#'@param data, matrix of data
-#'@return Returns: first row mean shifts, second row sd so that scaling can be undone. Scales original matrix in place
+#'@param M matrix of data
+#'@return first row mean shifts, second row sd so that scaling can be undone. Scales original matrix in place
 #'@export
 scale_lowmem <- function(M) {
     .Call('tkmeans_scale_lowmem', PACKAGE = 'tkmeans', M)

@@ -7,10 +7,10 @@
 scale_lowmem(M)
 }
 \arguments{
-\item{data, }{matrix of data}
+\item{M}{matrix of data}
 }
 \value{
-Returns: first row mean shifts, second row sd so that scaling can be undone. Scales original matrix in place
+first row mean shifts, second row sd so that scaling can be undone. Scales original matrix in place
 }
 \description{
 Recales each row to have mean 0 and sd 1.

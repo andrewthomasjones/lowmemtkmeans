@@ -1,21 +1,9 @@
-context("Package functions correctly")
+context("tkmeans package testing suite")
 
-set.seed(123)
-
-test_that("basic functionality", {
-  expect_equal(str_length("a"), 1)
-  expect_equal(str_length("ab"), 2)
-  expect_equal(str_length("abc"), 3)
-})
-
-test_that("str_length of factor is length of level", {
-  expect_equal(str_length(factor("a")), 1)
-  expect_equal(str_length(factor("ab")), 2)
-  expect_equal(str_length(factor("abc")), 3)
-})
-
-test_that("str_length of missing is missing", {
-  expect_equal(str_length(NA), NA_integer_)
-  expect_equal(str_length(c(NA, 1)), c(NA, 1))
-  expect_equal(str_length("NA"), 2)
+test_that("Basic functionality not compromised", {
+  set.seed(123)
+  iris_mat <- as.matrix(iris[,1:4])
+  expect_equal_to_reference(tkmeans_lowmem(iris_mat, 2 , 0.1, 1, 10, 0.001), "test_one.rds")
+  expect_equal_to_reference(tkmeans_lowmem(iris_mat, 3 , 0.2, 1, 10, 0.001), "test_two.rds")
+  expect_equal_to_reference(tkmeans_lowmem(iris_mat, 1 , 0.1, 1, 10, 0.001), "test_three.rds")
 })
