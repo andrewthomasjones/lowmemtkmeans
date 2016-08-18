@@ -203,26 +203,28 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
   std::priority_queue< di_pair, std::vector<di_pair>, CompareDist  >  smallest;
 
   int queue_len;
-  if(alpha != 0.0){
-    queue_len = floor((n-1)*(1-alpha))+1;
-  }else{
-    queue_len = 0;
-  }
+  if(alpha<=0.5){
+
+    if(alpha != 0.0){
+      queue_len = floor((n-1)*(alpha))+1;
+    }else{
+      queue_len = 0;
+    }
 
 
-  //Rcpp::Rcout << "number of outliers = " <<  queue_len   << std::endl;
-  //Rcpp::Rcout << "Begin main loop..."  << std::endl;
+    //Rcpp::Rcout << "number of outliers = " <<  queue_len   << std::endl;
+    //Rcpp::Rcout << "Begin main loop..."  << std::endl;
 
 
-  while(m<iter & diff > tol){
+    while(m<iter & diff > tol){
 
-    //Rcpp::Rcout << m << " of " << iter  << " iterations" << std::endl;
+      //Rcpp::Rcout << m << " of " << iter  << " iterations" << std::endl;
 
-    arma::mat new_centres = arma::zeros(k, d);
-    arma::mat centre_members = arma::zeros(k, 1);
+      arma::mat new_centres = arma::zeros(k, d);
+      arma::mat centre_members = arma::zeros(k, 1);
 
-    for(int i=0; i<n; i++)
-    {
+      for(int i=0; i<n; i++)
+      {
         arma::mat Dc = distCentre2(k, M.row(i), centres, lambda, d);
         //distCentre(k, M.row(i), centres, lambda, d).print();
 
@@ -230,12 +232,12 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
 
         di_pair temp = di_pair(Dc.at(cluster), cluster, i);
 
-        //new_centres.row(cluster) =  new_centres.row(cluster)+ M.row(i);
-        //centre_members(cluster,0) =  centre_members(cluster,0) + 1;
+        new_centres.row(cluster) =  new_centres.row(cluster)+ M.row(i);
+        centre_members(cluster,0) =  centre_members(cluster,0) + 1;
 
         if(queue_len > 0){
           if(smallest.size() < queue_len){
-             smallest.push(temp);
+            smallest.push(temp);
           }else{
             if(std::get<0>(smallest.top()) > std::get<0>(temp)){
               //Rcpp::Rcout << "out: "   <<  std::get<0>(smallest.top()) <<  " in: " << std::get<0>(temp) << std::endl;
@@ -245,37 +247,112 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
           }
         }
         //Rcpp::Rcout << "size of heap:"  <<  smallest.size() << std::endl;
-    }
+      }
 
 
-  //remove all the outliers
-    if(queue_len > 0){
+      //remove all the outliers
+      if(queue_len > 0){
+
         while (!smallest.empty())
         {
-          new_centres.row(std::get<1>(smallest.top())) = new_centres.row(std::get<1>(smallest.top())) + M.row(std::get<2>(smallest.top()));
+          new_centres.row(std::get<1>(smallest.top())) = new_centres.row(std::get<1>(smallest.top())) - M.row(std::get<2>(smallest.top()));
 
-          centre_members(std::get<1>(smallest.top()),0) = centre_members(std::get<1>(smallest.top()),0) + 1;
+          centre_members(std::get<1>(smallest.top()),0) = centre_members(std::get<1>(smallest.top()),0) - 1;
 
           //Rcpp::Rcout << " " << std::get<0>(smallest.top()) <<  " " << std::get<1>(smallest.top()) << " " << std::get<2>(smallest.top()) << std::endl;
 
           smallest.pop();
         }
-    }
+      }
 
-    if(centre_members.min() > 0) {
+      if(centre_members.min() > 0) {
         means = new_centres.each_col() / centre_members;
+      }else{
+        stop("Empty cluster");
+      }
+
+      //centre_members.print();
+      //Rcpp::Rcout << diff << std::endl;
+
+      diff = arma::accu(arma::abs(centres-means));
+      centres = means;
+      m++;
+    }
+  }
+  else{
+    if(alpha != 0.0){
+      queue_len = floor((n-1)*(1-alpha))+1;
     }else{
-       stop("Empty cluster");
+      queue_len = 0;
     }
 
-    //centre_members.print();
-    //Rcpp::Rcout << diff << std::endl;
 
-    diff = arma::accu(arma::abs(centres-means));
-    centres = means;
-    m++;
+    //Rcpp::Rcout << "number of outliers = " <<  queue_len   << std::endl;
+    //Rcpp::Rcout << "Begin main loop..."  << std::endl;
+
+
+    while(m<iter & diff > tol){
+
+      //Rcpp::Rcout << m << " of " << iter  << " iterations" << std::endl;
+
+      arma::mat new_centres = arma::zeros(k, d);
+      arma::mat centre_members = arma::zeros(k, 1);
+
+      for(int i=0; i<n; i++)
+      {
+          arma::mat Dc = distCentre2(k, M.row(i), centres, lambda, d);
+          //distCentre(k, M.row(i), centres, lambda, d).print();
+
+          int cluster = min_index(Dc);
+
+          di_pair temp = di_pair(Dc.at(cluster), cluster, i);
+
+          //new_centres.row(cluster) =  new_centres.row(cluster)+ M.row(i);
+          //centre_members(cluster,0) =  centre_members(cluster,0) + 1;
+
+          if(queue_len > 0){
+            if(smallest.size() < queue_len){
+               smallest.push(temp);
+            }else{
+              if(std::get<0>(smallest.top()) > std::get<0>(temp)){
+                //Rcpp::Rcout << "out: "   <<  std::get<0>(smallest.top()) <<  " in: " << std::get<0>(temp) << std::endl;
+                smallest.pop();
+                smallest.push(temp);
+              }
+            }
+          }
+          //Rcpp::Rcout << "size of heap:"  <<  smallest.size() << std::endl;
+      }
+
+
+    //remove all the outliers
+      if(queue_len > 0){
+          while (!smallest.empty())
+          {
+            new_centres.row(std::get<1>(smallest.top())) = new_centres.row(std::get<1>(smallest.top())) + M.row(std::get<2>(smallest.top()));
+
+            centre_members(std::get<1>(smallest.top()),0) = centre_members(std::get<1>(smallest.top()),0) + 1;
+
+            //Rcpp::Rcout << " " << std::get<0>(smallest.top()) <<  " " << std::get<1>(smallest.top()) << " " << std::get<2>(smallest.top()) << std::endl;
+
+            smallest.pop();
+          }
+      }
+
+      if(centre_members.min() > 0) {
+          means = new_centres.each_col() / centre_members;
+      }else{
+         stop("Empty cluster");
+      }
+
+      //centre_members.print();
+      //Rcpp::Rcout << diff << std::endl;
+
+      diff = arma::accu(arma::abs(centres-means));
+      centres = means;
+      m++;
+    }
   }
-
   return means;
 }
 
