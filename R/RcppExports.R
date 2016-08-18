@@ -5,46 +5,88 @@
 #'@useDynLib tkmeans
 NULL
 
+#'@title Trimmed k-means clustering
+#'@description
 #'Performs trimmed k-means clustering algorithm on a matrix of data. Each row is an observation.
+#'@details
+#'k is the number of clusters. Alpha is the proportion of data that will be excluded in the clustering.
 #'
-#'@param M matrix of data to be clustered
-#'@param n_cluster number of clusters
+#'Algorithm will halt if either maximum number of iterations is reached or the change between iterations drops below tol.
+#'
+#'When n_starts is greater than 1, the algorithm will run multiple times and the result with the best BIC will be returned.
+#'The centres are intialised by picking k observations.
+#'
+#'The function only returns the k cluster centres. To calculate the nearest cluster centre for each observation use the function \code{nearest_cluster}.
+#'
+#'@param M matrix (n x m). Rows are observations, columns are predictors.
+#'@param k number of clusters
 #'@param alpha proportion of data to be trimmed
 #'@param nstart number of restarts
 #'@param iter maximum number of iterations
-#'@param tol convergence criteria
-#'@return matrix of cluster centres
+#'@param tol criteria for algorithm convergence
+#'@param verbose If true will output more information on algorithm progress.
+#'@return matrix of cluster means (k x m).
+#'@examples
+#'iris_mat <- as.matrix(iris[,1:4])
+#'iris_centres2 <- tkmeans(iris_mat, 2 , 0.1, 1, 10, 0.001) # 2 clusters
 #'@export
-tkmeans_lowmem <- function(M, n_cluster, alpha, nstart, iter, tol) {
-    .Call('tkmeans_tkmeans_lowmem', PACKAGE = 'tkmeans', M, n_cluster, alpha, nstart, iter, tol)
+tkmeans <- function(M, k, alpha, nstart = 1L, iter = 10L, tol = 0.0001, verbose = FALSE) {
+    .Call('tkmeans_tkmeans', PACKAGE = 'tkmeans', M, k, alpha, nstart, iter, tol, verbose)
 }
 
-#'Recales each row to have mean 0 and sd 1.
+#'@title Rescales a matrix in place.
+#'@description
+#'Recales matrix so that each col to have mean 0 and sd 1.
+#'The original matrix is overwritten in place. The function returns the means and standard deviations of each column used to rescale it.
+#'@details
+#'The key advantage of this method is that it can be applied to very matrices without having to make a second copy in memory and the orginal can be restored using the saved information.
 #'
-#'@param M matrix of data
-#'@return first row mean shifts, second row sd so that scaling can be undone. Scales original matrix in place
+#'@param M matrix of data (n x m)
+#'@return Returns a matrix of size 2 x m. The first row contains the means. The second row  contains the sd. Scales original matrix in place.
+#'@examples
+#'m = matrix(rnorm(24, 1, 2),4, 6)
+#'scale_params = scale_mat_inplace(m)
+#'sweep(sweep(m,2,scale_params[2,],'*'),2,scale_params [1,], '+') # orginal matrix restored
 #'@export
-scale_lowmem <- function(M) {
-    .Call('tkmeans_scale_lowmem', PACKAGE = 'tkmeans', M)
+scale_mat_inplace <- function(M) {
+    .Call('tkmeans_scale_mat_inplace', PACKAGE = 'tkmeans', M)
 }
 
-#'Calculates BIC for a given clustering.
+#'@title Calculates BIC for a given clustering.
+#'@description
+#'Computes Bayesian information criterion for a given clustering of a data set.
+#'@details
+#'Bayesian information criterion (BIC) is calculated using the formula, BIC =  -2 * log(L) + k*log(n).
+#'k is the number of free parameters, in this case is m*k + k - 1.
+#'n is the number of observations (rows of data).
+#'L is the liklihood for the given set of cluster centres.
 #'
-#'@param data matrix of data
-#'@param centres matrix of cluster means
+#'@param data a matrix (n x m). Rows are observations, columns are predictors.
+#'@param centres matrix of cluster means (k x m), where k is the number of clusters.
 #'@return BIC value
+#'@examples
+#'iris_mat <- as.matrix(iris[,1:4])
+#'iris_centres2 <- tkmeans(iris_mat, 2 , 0.1, 1, 10, 0.001) # 2 clusters
+#'iris_centres3 <- tkmeans(iris_mat, 3 , 0.1, 1, 10, 0.001) # 3 clusters
+#'cluster_BIC(iris_mat, iris_centres2)
+#'cluster_BIC(iris_mat, iris_centres3)
 #'@export
-BIC_lowmem <- function(data, centres) {
-    .Call('tkmeans_BIC_lowmem', PACKAGE = 'tkmeans', data, centres)
+cluster_BIC <- function(data, centres) {
+    .Call('tkmeans_cluster_BIC', PACKAGE = 'tkmeans', data, centres)
 }
 
-#'Allocates each Row (observation) in data to the nearest cluster centre.
-#'
-#'@param data matrix of data to be clustered
-#'@param centres set of cluster means
-#'@return vector of cluster allocations
+#'@title Allocates each rw (observation) in data to the nearest cluster centre.
+#'@description
+#'For each observation the euclidean distance to each of the cluster centres is calculated and cluster with the smallest distance is return for that observation.
+#'@param data a matrix (n x m) to be clustered
+#'@param centres matrix of cluster means (k x m), wher k is the number of clusters.
+#'@return vector of cluster allocations, n values ranging from 1 to k.
+#'@examples
+#'iris_mat <- as.matrix(iris[,1:4])
+#'centres<- tkmeans(iris_mat, 3 , 0.2, 1, 10, 0.001)
+#' nearest_cluster(iris_mat, centres)
 #'@export
-tmeansClust_lowmem <- function(data, centres) {
-    .Call('tkmeans_tmeansClust_lowmem', PACKAGE = 'tkmeans', data, centres)
+nearest_cluster <- function(data, centres) {
+    .Call('tkmeans_nearest_cluster', PACKAGE = 'tkmeans', data, centres)
 }
 
