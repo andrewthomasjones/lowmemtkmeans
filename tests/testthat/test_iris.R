@@ -10,6 +10,7 @@ test_that("Basic functionality not compromised", {
 
 test_that("Multistart", {
   set.seed(123)
+  iris_mat <- as.matrix(iris[,1:4])
   expect_equal_to_reference(tkmeans(iris_mat, 2 , 0.1, 5, 10, 0.001), "test_multi_one.rds")
 })
 
