@@ -5,6 +5,29 @@
 #'@useDynLib tkmeans
 NULL
 
+#'@title Calculates BIC for a given clustering.
+#'@description
+#'Computes Bayesian information criterion for a given clustering of a data set.
+#'@details
+#'Bayesian information criterion (BIC) is calculated using the formula, BIC =  -2 * log(L) + k*log(n).
+#'k is the number of free parameters, in this case is m*k + k - 1.
+#'n is the number of observations (rows of data).
+#'L is the liklihood for the given set of cluster centres.
+#'
+#'@param data a matrix (n x m). Rows are observations, columns are predictors.
+#'@param centres matrix of cluster means (k x m), where k is the number of clusters.
+#'@return BIC value
+#'@examples
+#'iris_mat <- as.matrix(iris[,1:4])
+#'iris_centres2 <- tkmeans(iris_mat, 2 , 0.1, 1, 10, 0.001) # 2 clusters
+#'iris_centres3 <- tkmeans(iris_mat, 3 , 0.1, 1, 10, 0.001) # 3 clusters
+#'cluster_BIC(iris_mat, iris_centres2)
+#'cluster_BIC(iris_mat, iris_centres3)
+#'@export
+cluster_BIC <- function(data, centres) {
+    .Call('tkmeans_cluster_BIC', PACKAGE = 'tkmeans', data, centres)
+}
+
 #'@title Trimmed k-means clustering
 #'@description
 #'Performs trimmed k-means clustering algorithm on a matrix of data. Each row is an observation.
@@ -50,29 +73,6 @@ tkmeans <- function(M, k, alpha, nstart = 1L, iter = 10L, tol = 0.0001, verbose 
 #'@export
 scale_mat_inplace <- function(M) {
     .Call('tkmeans_scale_mat_inplace', PACKAGE = 'tkmeans', M)
-}
-
-#'@title Calculates BIC for a given clustering.
-#'@description
-#'Computes Bayesian information criterion for a given clustering of a data set.
-#'@details
-#'Bayesian information criterion (BIC) is calculated using the formula, BIC =  -2 * log(L) + k*log(n).
-#'k is the number of free parameters, in this case is m*k + k - 1.
-#'n is the number of observations (rows of data).
-#'L is the liklihood for the given set of cluster centres.
-#'
-#'@param data a matrix (n x m). Rows are observations, columns are predictors.
-#'@param centres matrix of cluster means (k x m), where k is the number of clusters.
-#'@return BIC value
-#'@examples
-#'iris_mat <- as.matrix(iris[,1:4])
-#'iris_centres2 <- tkmeans(iris_mat, 2 , 0.1, 1, 10, 0.001) # 2 clusters
-#'iris_centres3 <- tkmeans(iris_mat, 3 , 0.1, 1, 10, 0.001) # 3 clusters
-#'cluster_BIC(iris_mat, iris_centres2)
-#'cluster_BIC(iris_mat, iris_centres3)
-#'@export
-cluster_BIC <- function(data, centres) {
-    .Call('tkmeans_cluster_BIC', PACKAGE = 'tkmeans', data, centres)
 }
 
 #'@title Allocates each rw (observation) in data to the nearest cluster centre.

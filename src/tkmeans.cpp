@@ -141,6 +141,73 @@ arma::mat init_centres(arma::mat M, int k){
 }
 
 
+
+//'@title Calculates BIC for a given clustering.
+//'@description
+//'Computes Bayesian information criterion for a given clustering of a data set.
+//'@details
+//'Bayesian information criterion (BIC) is calculated using the formula, BIC =  -2 * log(L) + k*log(n).
+//'k is the number of free parameters, in this case is m*k + k - 1.
+//'n is the number of observations (rows of data).
+//'L is the liklihood for the given set of cluster centres.
+//'
+//'@param data a matrix (n x m). Rows are observations, columns are predictors.
+//'@param centres matrix of cluster means (k x m), where k is the number of clusters.
+//'@return BIC value
+//'@examples
+//'iris_mat <- as.matrix(iris[,1:4])
+//'iris_centres2 <- tkmeans(iris_mat, 2 , 0.1, 1, 10, 0.001) # 2 clusters
+//'iris_centres3 <- tkmeans(iris_mat, 3 , 0.1, 1, 10, 0.001) # 3 clusters
+//'cluster_BIC(iris_mat, iris_centres2)
+//'cluster_BIC(iris_mat, iris_centres3)
+//'@export
+// [[Rcpp::export]]
+double  cluster_BIC(arma::mat& data, arma::mat& centres){
+  int x = data.n_rows;
+  int m = centres.n_cols;
+  int k = centres.n_rows;
+  double PI_val = log(1./k);
+
+
+  if(data.n_cols!=m){
+    stop("Cluster centre dimensionality does not match data.");
+  }
+
+  arma::mat temp_row(1, k);
+
+
+  double log_like_accum = 0.;
+
+  for(int i=0;i<x;i++){
+
+    for(int j=0;j<k;j++){
+
+      temp_row.at(0,j) =
+
+        -0.5*(arma::accu(arma::pow(data.row(i),2.))
+        + arma::accu(arma::pow(centres.row(j),2.))
+        - 2.*dot(data.row(i),centres.row(j)))
+        - (m/2.)*log(2.*M_PI) - log(m)/2. + PI_val;
+
+    }
+
+    double temp_max = temp_row.max();
+
+
+    temp_row = temp_row - temp_max;
+
+    double log_like = temp_max + log(arma::accu(arma::exp(temp_row)));
+    //Rcpp::Rcout <<  log_like << std::endl;
+    log_like_accum += log_like;
+  }
+
+  //Rcpp::Rcout <<  log_like_accum << std::endl;
+
+
+  return -2*log_like_accum  + log(x)*(m*k + k - 1);
+}
+
+
 //'@title Trimmed k-means clustering
 //'@description
 //'Performs trimmed k-means clustering algorithm on a matrix of data. Each row is an observation.
@@ -187,119 +254,53 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
     Rcpp::Rcout << "n = " << n << " d = " << d <<  " k = " << k << std::endl;
     Rcpp::Rcout << "n starts = " << nstart << " max iterations " << iter <<  " alpha = " << alpha << std::endl;
   }
-  arma::mat centres = init_centres(M, k);
-  arma::mat means = centres;
-
-  double lambda = 1;
-  //double tol = 0.001;
-  double diff = 1;
-  int m=0;
-
-  // cluster membership record
-  //std::vector<int> cluster_membership;
-  //cluster_membership.reserve(n);
-
-  //keep list of smallest using priority queue
-  std::priority_queue< di_pair, std::vector<di_pair>, CompareDist  >  smallest;
-
-  int queue_len;
-  if(alpha<=0.5){
-
-    if(alpha != 0.0){
-      queue_len = floor((n-1)*(alpha))+1;
-    }else{
-      queue_len = 0;
-    }
 
 
-    //Rcpp::Rcout << "number of outliers = " <<  queue_len   << std::endl;
-    //Rcpp::Rcout << "Begin main loop..."  << std::endl;
+  arma::mat best_means = init_centres(M, k);
+  double temp_BIC = 0.0;
+  double best_BIC = 0.0;
+  int best_j = 0;
 
+  for(int j=0; j<nstart;j++){
 
-    while(m<iter & diff > tol){
+    arma::mat centres = init_centres(M, k);
+    arma::mat means = centres;
 
-      //Rcpp::Rcout << m << " of " << iter  << " iterations" << std::endl;
+    double lambda = 1;
+    //double tol = 0.001;
+    double diff = 1;
+    int m=0;
 
-      arma::mat new_centres = arma::zeros(k, d);
-      arma::mat centre_members = arma::zeros(k, 1);
+    // cluster membership record
+    //std::vector<int> cluster_membership;
+    //cluster_membership.reserve(n);
 
-      for(int i=0; i<n; i++)
-      {
-        arma::mat Dc = distCentre2(k, M.row(i), centres, lambda, d);
-        //distCentre(k, M.row(i), centres, lambda, d).print();
+    //keep list of smallest using priority queue
+    std::priority_queue< di_pair, std::vector<di_pair>, CompareDist  >  smallest;
 
-        int cluster = min_index(Dc);
+    int queue_len;
+    if(alpha<=0.5){
 
-        di_pair temp = di_pair(Dc.at(cluster), cluster, i);
-
-        new_centres.row(cluster) =  new_centres.row(cluster)+ M.row(i);
-        centre_members(cluster,0) =  centre_members(cluster,0) + 1;
-
-        if(queue_len > 0){
-          if(smallest.size() < queue_len){
-            smallest.push(temp);
-          }else{
-            if(std::get<0>(smallest.top()) > std::get<0>(temp)){
-              //Rcpp::Rcout << "out: "   <<  std::get<0>(smallest.top()) <<  " in: " << std::get<0>(temp) << std::endl;
-              smallest.pop();
-              smallest.push(temp);
-            }
-          }
-        }
-        //Rcpp::Rcout << "size of heap:"  <<  smallest.size() << std::endl;
-      }
-
-
-      //remove all the outliers
-      if(queue_len > 0){
-
-        while (!smallest.empty())
-        {
-          new_centres.row(std::get<1>(smallest.top())) = new_centres.row(std::get<1>(smallest.top())) - M.row(std::get<2>(smallest.top()));
-
-          centre_members(std::get<1>(smallest.top()),0) = centre_members(std::get<1>(smallest.top()),0) - 1;
-
-          //Rcpp::Rcout << " " << std::get<0>(smallest.top()) <<  " " << std::get<1>(smallest.top()) << " " << std::get<2>(smallest.top()) << std::endl;
-
-          smallest.pop();
-        }
-      }
-
-      if(centre_members.min() > 0) {
-        means = new_centres.each_col() / centre_members;
+      if(alpha != 0.0){
+        queue_len = floor((n-1)*(alpha))+1;
       }else{
-        stop("Empty cluster");
+        queue_len = 0;
       }
 
-      //centre_members.print();
-      //Rcpp::Rcout << diff << std::endl;
 
-      diff = arma::accu(arma::abs(centres-means));
-      centres = means;
-      m++;
-    }
-  }
-  else{
-    if(alpha != 0.0){
-      queue_len = floor((n-1)*(1-alpha))+1;
-    }else{
-      queue_len = 0;
-    }
+      //Rcpp::Rcout << "number of outliers = " <<  queue_len   << std::endl;
+      //Rcpp::Rcout << "Begin main loop..."  << std::endl;
 
 
-    //Rcpp::Rcout << "number of outliers = " <<  queue_len   << std::endl;
-    //Rcpp::Rcout << "Begin main loop..."  << std::endl;
+      while(m<iter & diff > tol){
 
+        //Rcpp::Rcout << m << " of " << iter  << " iterations" << std::endl;
 
-    while(m<iter & diff > tol){
+        arma::mat new_centres = arma::zeros(k, d);
+        arma::mat centre_members = arma::zeros(k, 1);
 
-      //Rcpp::Rcout << m << " of " << iter  << " iterations" << std::endl;
-
-      arma::mat new_centres = arma::zeros(k, d);
-      arma::mat centre_members = arma::zeros(k, 1);
-
-      for(int i=0; i<n; i++)
-      {
+        for(int i=0; i<n; i++)
+        {
           arma::mat Dc = distCentre2(k, M.row(i), centres, lambda, d);
           //distCentre(k, M.row(i), centres, lambda, d).print();
 
@@ -307,12 +308,12 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
 
           di_pair temp = di_pair(Dc.at(cluster), cluster, i);
 
-          //new_centres.row(cluster) =  new_centres.row(cluster)+ M.row(i);
-          //centre_members(cluster,0) =  centre_members(cluster,0) + 1;
+          new_centres.row(cluster) =  new_centres.row(cluster)+ M.row(i);
+          centre_members(cluster,0) =  centre_members(cluster,0) + 1;
 
           if(queue_len > 0){
             if(smallest.size() < queue_len){
-               smallest.push(temp);
+              smallest.push(temp);
             }else{
               if(std::get<0>(smallest.top()) > std::get<0>(temp)){
                 //Rcpp::Rcout << "out: "   <<  std::get<0>(smallest.top()) <<  " in: " << std::get<0>(temp) << std::endl;
@@ -322,38 +323,134 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
             }
           }
           //Rcpp::Rcout << "size of heap:"  <<  smallest.size() << std::endl;
-      }
+        }
 
 
-    //remove all the outliers
-      if(queue_len > 0){
+        //remove all the outliers
+        if(queue_len > 0){
+
           while (!smallest.empty())
           {
-            new_centres.row(std::get<1>(smallest.top())) = new_centres.row(std::get<1>(smallest.top())) + M.row(std::get<2>(smallest.top()));
+            new_centres.row(std::get<1>(smallest.top())) = new_centres.row(std::get<1>(smallest.top())) - M.row(std::get<2>(smallest.top()));
 
-            centre_members(std::get<1>(smallest.top()),0) = centre_members(std::get<1>(smallest.top()),0) + 1;
+            centre_members(std::get<1>(smallest.top()),0) = centre_members(std::get<1>(smallest.top()),0) - 1;
 
             //Rcpp::Rcout << " " << std::get<0>(smallest.top()) <<  " " << std::get<1>(smallest.top()) << " " << std::get<2>(smallest.top()) << std::endl;
 
             smallest.pop();
           }
-      }
+        }
 
-      if(centre_members.min() > 0) {
+        if(centre_members.min() > 0) {
           means = new_centres.each_col() / centre_members;
+        }else{
+          stop("Empty cluster");
+        }
+
+        //centre_members.print();
+        //Rcpp::Rcout << diff << std::endl;
+
+        diff = arma::accu(arma::abs(centres-means));
+        centres = means;
+        m++;
+      }
+    }
+    else{
+      if(alpha != 0.0){
+        queue_len = floor((n-1)*(1-alpha))+1;
       }else{
-         stop("Empty cluster");
+        queue_len = 0;
       }
 
-      //centre_members.print();
-      //Rcpp::Rcout << diff << std::endl;
 
-      diff = arma::accu(arma::abs(centres-means));
-      centres = means;
-      m++;
+      //Rcpp::Rcout << "number of outliers = " <<  queue_len   << std::endl;
+      //Rcpp::Rcout << "Begin main loop..."  << std::endl;
+
+
+      while(m<iter & diff > tol){
+
+        //Rcpp::Rcout << m << " of " << iter  << " iterations" << std::endl;
+
+        arma::mat new_centres = arma::zeros(k, d);
+        arma::mat centre_members = arma::zeros(k, 1);
+
+        for(int i=0; i<n; i++)
+        {
+            arma::mat Dc = distCentre2(k, M.row(i), centres, lambda, d);
+            //distCentre(k, M.row(i), centres, lambda, d).print();
+
+            int cluster = min_index(Dc);
+
+            di_pair temp = di_pair(Dc.at(cluster), cluster, i);
+
+            //new_centres.row(cluster) =  new_centres.row(cluster)+ M.row(i);
+            //centre_members(cluster,0) =  centre_members(cluster,0) + 1;
+
+            if(queue_len > 0){
+              if(smallest.size() < queue_len){
+                 smallest.push(temp);
+              }else{
+                if(std::get<0>(smallest.top()) > std::get<0>(temp)){
+                  //Rcpp::Rcout << "out: "   <<  std::get<0>(smallest.top()) <<  " in: " << std::get<0>(temp) << std::endl;
+                  smallest.pop();
+                  smallest.push(temp);
+                }
+              }
+            }
+            //Rcpp::Rcout << "size of heap:"  <<  smallest.size() << std::endl;
+        }
+
+
+      //remove all the outliers
+        if(queue_len > 0){
+            while (!smallest.empty())
+            {
+              new_centres.row(std::get<1>(smallest.top())) = new_centres.row(std::get<1>(smallest.top())) + M.row(std::get<2>(smallest.top()));
+
+              centre_members(std::get<1>(smallest.top()),0) = centre_members(std::get<1>(smallest.top()),0) + 1;
+
+              //Rcpp::Rcout << " " << std::get<0>(smallest.top()) <<  " " << std::get<1>(smallest.top()) << " " << std::get<2>(smallest.top()) << std::endl;
+
+              smallest.pop();
+            }
+        }
+
+        if(centre_members.min() > 0) {
+            means = new_centres.each_col() / centre_members;
+        }else{
+           stop("Empty cluster");
+        }
+
+        //centre_members.print();
+        //Rcpp::Rcout << diff << std::endl;
+
+        diff = arma::accu(arma::abs(centres-means));
+        centres = means;
+        m++;
+      }
     }
+
+    temp_BIC = cluster_BIC(M, means);
+    if(verbose){
+      Rcpp::Rcout << "Start: "<< j+1 << " BIC: "<< temp_BIC << std::endl;
+    }
+
+    if(temp_BIC<best_BIC| j==0){
+      best_means = means;
+      best_BIC = temp_BIC;
+      best_j = j;
+    }
+
+
   }
-  return means;
+
+
+  if(verbose){
+    Rcpp::Rcout << "Start: "<< best_j << " was best. BIC: "<< best_BIC << std::endl;
+  }
+
+
+  return best_means;
 }
 
 //'@title Rescales a matrix in place.
@@ -388,70 +485,6 @@ arma::mat scale_mat_inplace(arma::mat& M){
   }
 
 
-//'@title Calculates BIC for a given clustering.
-//'@description
-//'Computes Bayesian information criterion for a given clustering of a data set.
-//'@details
-//'Bayesian information criterion (BIC) is calculated using the formula, BIC =  -2 * log(L) + k*log(n).
-//'k is the number of free parameters, in this case is m*k + k - 1.
-//'n is the number of observations (rows of data).
-//'L is the liklihood for the given set of cluster centres.
-//'
-//'@param data a matrix (n x m). Rows are observations, columns are predictors.
-//'@param centres matrix of cluster means (k x m), where k is the number of clusters.
-//'@return BIC value
-//'@examples
-//'iris_mat <- as.matrix(iris[,1:4])
-//'iris_centres2 <- tkmeans(iris_mat, 2 , 0.1, 1, 10, 0.001) # 2 clusters
-//'iris_centres3 <- tkmeans(iris_mat, 3 , 0.1, 1, 10, 0.001) # 3 clusters
-//'cluster_BIC(iris_mat, iris_centres2)
-//'cluster_BIC(iris_mat, iris_centres3)
-//'@export
-// [[Rcpp::export]]
-double  cluster_BIC(arma::mat& data, arma::mat& centres){
-          int x = data.n_rows;
-          int m = centres.n_cols;
-          int k = centres.n_rows;
-          double PI_val = log(1./k);
-
-
-          if(data.n_cols!=m){
-            stop("Cluster centre dimensionality does not match data.");
-          }
-
-          arma::mat temp_row(1, k);
-
-
-          double log_like_accum = 0.;
-
-          for(int i=0;i<x;i++){
-
-            for(int j=0;j<k;j++){
-
-              temp_row.at(0,j) =
-
-                -0.5*(arma::accu(arma::pow(data.row(i),2.))
-                + arma::accu(arma::pow(centres.row(j),2.))
-                - 2.*dot(data.row(i),centres.row(j)))
-                - (m/2.)*log(2.*M_PI) - log(m)/2. + PI_val;
-
-            }
-
-            double temp_max = temp_row.max();
-
-
-            temp_row = temp_row - temp_max;
-
-            double log_like = temp_max + log(arma::accu(arma::exp(temp_row)));
-            //Rcpp::Rcout <<  log_like << std::endl;
-            log_like_accum += log_like;
-          }
-
-          //Rcpp::Rcout <<  log_like_accum << std::endl;
-
-
-  return -2*log_like_accum  + log(x)*(m*k + k - 1);
-}
 
 
 

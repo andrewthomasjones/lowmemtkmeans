@@ -6,6 +6,7 @@ test_that("Basic functionality not compromised", {
   expect_equal_to_reference(tkmeans(iris_mat, 2 , 0.1, 1, 10, 0.001), "test_one.rds")
   expect_equal_to_reference(tkmeans(iris_mat, 3 , 0.2, 1, 10, 0.001), "test_two.rds")
   expect_equal_to_reference(tkmeans(iris_mat, 1 , 0.1, 1, 10, 0.001), "test_three.rds")
+  expect_equal_to_reference(tkmeans(iris_mat, 2 , 0.1, 5, 10, 0.001), "test_four.rds")
 })
 
 test_that("Scaling function", {
