@@ -34,10 +34,10 @@ public:
 
 
 arma::vec Mahalanobis(arma::mat x, arma::rowvec center, arma::mat cov) {
-  int n = x.n_rows;
+  unsigned int n = x.n_rows;
   arma::mat x_cen;
   x_cen.copy_size(x);
-  for (int i=0; i < n; i++) {
+  for (unsigned int i=0; i < n; i++) {
     x_cen.row(i) = x.row(i) - center;
   }
   return sum((x_cen * cov.i()) % x_cen, 1);
@@ -67,7 +67,7 @@ arma::vec distCentre(int k, arma::mat ui, arma::mat centres, double lambda, int 
    //store distances
   arma::vec dist =  arma::zeros(k);
 
-  for (int j=0; j<k; j++)
+  for (unsigned int j=0; j<k; j++)
   {
     dist.at(j) = 1.0/k * dmvnorm_arma(ui, centres.row(j), sigma, false)[0];
   }
@@ -81,7 +81,7 @@ arma::vec distCentre2(int k, arma::mat ui, arma::mat centres, double lambda, int
   //store distances
   arma::vec dist =  arma::zeros(k);
 
-  for (int j=0; j<k; j++)
+  for (unsigned int j=0; j<k; j++)
   {
     dist.at(j) = sqrt(arma::sum(arma::pow(centres.row(j) - ui, 2.0)));
   }
@@ -131,7 +131,7 @@ arma::mat init_centres(arma::mat M, int k){
 
   arma::mat cent =  arma::zeros(k,d);
 
-  for(int i=0; i<k; i++){
+  for(unsigned int i=0; i<k; i++){
     //Rcpp::Rcout << "i = " << i << " n = " << B.at(i,0) <<  std::endl;
 
     cent.row(i) = M.row(B.at(i,0));
@@ -163,9 +163,9 @@ arma::mat init_centres(arma::mat M, int k){
 //'@export
 // [[Rcpp::export]]
 double  cluster_BIC(arma::mat& data, arma::mat& centres){
-  int x = data.n_rows;
-  int m = centres.n_cols;
-  int k = centres.n_rows;
+  unsigned int x = data.n_rows;
+  unsigned int m = centres.n_cols;
+  unsigned int k = centres.n_rows;
   double PI_val = log(1./k);
 
 
@@ -178,9 +178,9 @@ double  cluster_BIC(arma::mat& data, arma::mat& centres){
 
   double log_like_accum = 0.;
 
-  for(int i=0;i<x;i++){
+  for(unsigned int i=0;i<x;i++){
 
-    for(int j=0;j<k;j++){
+    for(unsigned int j=0;j<k;j++){
 
       temp_row.at(0,j) =
 
@@ -235,10 +235,10 @@ double  cluster_BIC(arma::mat& data, arma::mat& centres){
 //'@export
 // [[Rcpp::export]]
 arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter = 10, double tol = 0.0001, bool verbose = false){
-  int n = size(M)[0];
-  int d = size(M)[1];
+  unsigned int n = size(M)[0];
+  unsigned int d = size(M)[1];
 
-  if(alpha>=1 | alpha <=0){
+  if((alpha>=1) | (alpha <=0)){
     stop("alpha must be in (0,1).");
   }
 
@@ -261,7 +261,7 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
   double best_BIC = 0.0;
   int best_j = 0;
 
-  for(int j=0; j<nstart;j++){
+  for(unsigned int j=0; j<nstart;j++){
 
     arma::mat centres = init_centres(M, k);
     arma::mat means = centres;
@@ -269,7 +269,7 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
     double lambda = 1;
     //double tol = 0.001;
     double diff = 1;
-    int m=0;
+    unsigned int m=0;
 
     // cluster membership record
     //std::vector<int> cluster_membership;
@@ -278,7 +278,7 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
     //keep list of smallest using priority queue
     std::priority_queue< di_pair, std::vector<di_pair>, CompareDist  >  smallest;
 
-    int queue_len;
+    unsigned int queue_len;
     if(alpha<=0.5){
 
       if(alpha != 0.0){
@@ -292,19 +292,19 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
       //Rcpp::Rcout << "Begin main loop..."  << std::endl;
 
 
-      while(m<iter & diff > tol){
+      while((m<iter) & (diff > tol)){
 
         //Rcpp::Rcout << m << " of " << iter  << " iterations" << std::endl;
 
         arma::mat new_centres = arma::zeros(k, d);
         arma::mat centre_members = arma::zeros(k, 1);
 
-        for(int i=0; i<n; i++)
+        for(unsigned int i=0; i<n; i++)
         {
           arma::mat Dc = distCentre2(k, M.row(i), centres, lambda, d);
           //distCentre(k, M.row(i), centres, lambda, d).print();
 
-          int cluster = min_index(Dc);
+          unsigned int cluster = min_index(Dc);
 
           di_pair temp = di_pair(Dc.at(cluster), cluster, i);
 
@@ -367,19 +367,19 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
       //Rcpp::Rcout << "Begin main loop..."  << std::endl;
 
 
-      while(m<iter & diff > tol){
+      while((m<iter) & (diff > tol)){
 
         //Rcpp::Rcout << m << " of " << iter  << " iterations" << std::endl;
 
         arma::mat new_centres = arma::zeros(k, d);
         arma::mat centre_members = arma::zeros(k, 1);
 
-        for(int i=0; i<n; i++)
+        for(unsigned int i=0; i<n; i++)
         {
             arma::mat Dc = distCentre2(k, M.row(i), centres, lambda, d);
             //distCentre(k, M.row(i), centres, lambda, d).print();
 
-            int cluster = min_index(Dc);
+            unsigned int cluster = min_index(Dc);
 
             di_pair temp = di_pair(Dc.at(cluster), cluster, i);
 
@@ -435,7 +435,7 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, int nstart = 1, int iter =
       Rcpp::Rcout << "Start: "<< j+1 << " BIC: "<< temp_BIC << std::endl;
     }
 
-    if(temp_BIC<best_BIC| j==0){
+    if((temp_BIC<best_BIC)| (j==0)){
       best_means = means;
       best_BIC = temp_BIC;
       best_j = j;
@@ -472,7 +472,7 @@ arma::mat scale_mat_inplace(arma::mat& M){
   arma::rowvec means = mean(M);
   arma::rowvec sds = stddev(M);
 
-  for(int i=0; i< M.n_cols; i++){
+  for(unsigned int i=0; i< M.n_cols; i++){
     M.col(i) -= means.at(i);
     M.col(i) /= sds.at(i);
   }
@@ -502,9 +502,9 @@ arma::mat scale_mat_inplace(arma::mat& M){
 //'@export
 // [[Rcpp::export]]
 arma::uvec nearest_cluster(arma::mat& data, arma::mat& centres){
-  int k =  centres.n_rows;
+  unsigned int k =  centres.n_rows;
   double lambda = 1.0;
-  int d = size(data)[0];
+  unsigned int d = size(data)[0];
 
   if(data.n_cols!=centres.n_cols){
     stop("Cluster centre dimensionality does not match data.");
@@ -512,9 +512,9 @@ arma::uvec nearest_cluster(arma::mat& data, arma::mat& centres){
 
   arma::uvec clusters = arma::zeros<arma::uvec>(d);
 
-  for(int i=0;i<d;i++){
+  for(unsigned int i=0;i<d;i++){
     arma::mat Dc = distCentre2(k, data.row(i), centres, lambda, d);
-    int cluster = min_index(Dc);
+    unsigned int cluster = min_index(Dc);
     clusters.at(i) = cluster+1;//going back to 1 indexed R
   }
 
