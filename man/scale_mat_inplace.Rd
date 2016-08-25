@@ -10,14 +10,14 @@ scale_mat_inplace(M)
 \item{M}{matrix of data (n x m)}
 }
 \value{
-Returns a matrix of size 2 x m. The first row contains the means. The second row  contains the sd. Scales original matrix in place.
+Returns a matrix of size (2 x m). The first row contains the column means. The second row contains the column standard dveiations. NOTE: The original matrix, M, is overwritten.
 }
 \description{
-Recales matrix so that each col to have mean 0 and sd 1.
+Recales matrix so that each column has a mean of 0 and a standard deviation of 1.
 The original matrix is overwritten in place. The function returns the means and standard deviations of each column used to rescale it.
 }
 \details{
-The key advantage of this method is that it can be applied to very matrices without having to make a second copy in memory and the orginal can be restored using the saved information.
+The key advantage of this method is that it can be applied to very large matrices without having to make a second copy in memory and the orginal can still be restored using the saved information.
 }
 \examples{
 m = matrix(rnorm(24, 1, 2),4, 6)

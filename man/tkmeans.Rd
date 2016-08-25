@@ -23,13 +23,14 @@ tkmeans(M, k, alpha, nstart = 1L, iter = 10L, tol = 1e-04,
 \item{verbose}{If true will output more information on algorithm progress.}
 }
 \value{
-matrix of cluster means (k x m).
+Returns a matrix of cluster means (k x m).
 }
 \description{
-Performs trimmed k-means clustering algorithm on a matrix of data. Each row is an observation.
+Performs trimmed k-means clustering algorithm [1] on a matrix of data. Each row  in the data is an observation, each column is  a variable.
+For optimal use columns should be scaled to have the same means and variances using \code{scale_mat_inplace}.
 }
 \details{
-k is the number of clusters. Alpha is the proportion of data that will be excluded in the clustering.
+k is the number of clusters. alpha is the proportion of data that will be excluded in the clustering.
 
 Algorithm will halt if either maximum number of iterations is reached or the change between iterations drops below tol.
 
@@ -40,6 +41,10 @@ The function only returns the k cluster centres. To calculate the nearest cluste
 }
 \examples{
 iris_mat <- as.matrix(iris[,1:4])
-iris_centres2 <- tkmeans(iris_mat, 2 , 0.1, 1, 10, 0.001) # 2 clusters
+scale_params<-scale_mat_inplace(iris_mat)
+iris_cluster<- tkmeans(iris_mat, 2 , 0.1, 1, 10, 0.001) # 2 clusters
+}
+\references{
+[1] Cuesta-Albertos, J. A., Gordaliza A., and Matran C. "Trimmed K-Means: An Attempt to Robustify Quantizers." The Annals of Statistics 25.2 (1997): 553-76.
 }
 
