@@ -1,4 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^cran-comments\.md$
-^\vignettes\*$ #current vignette not ready for primetime
+^README\.Rmd$
+^README-.*\.png$
+^NEWS\.md$

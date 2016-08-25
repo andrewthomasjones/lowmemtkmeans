@@ -1,0 +1,25 @@
+---
+output: github_document
+---
+
+The tkmeans package attempts to implement the trimmed k-means algorithm of Cuesta-Albertos, et al. (1997) using as little memory as possible.
+Data is editted in place, the trimming is implemented using a priority queue structure in C++ trhough Rcpp and low memory use versions of utility functions are provided.
+
+An example that shows how to use the package to solve a simple problem.
+
+To install the latest version run:
+
+  install.packages("devtools")
+  library(devtools)
+  install_github("andrewthomasjones/tkmeans")
+
+
+An overview that describes the main components of the package. For more complex packages, this will point to vignettes for more details.
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
