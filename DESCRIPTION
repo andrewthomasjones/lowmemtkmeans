@@ -12,7 +12,5 @@ Imports:
     Rcpp (>= 0.12.5)
 SystemRequirements: C++11
 RoxygenNote: 5.0.1
-Suggests: testthat,
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
+Suggests: testthat
+
