@@ -19,7 +19,7 @@ For each observation the euclidean distance to each of the cluster centres is ca
 }
 \examples{
 iris_mat <- as.matrix(iris[,1:4])
-centres<- tkmeans(iris_mat, 3 , 0.2, 1, 10, 0.001)
+centres<- tkmeans(iris_mat, 3 , 0.2, c(1,1,1,1), 1, 10, 0.001)
 nearest_cluster(iris_mat, centres)
 }
 

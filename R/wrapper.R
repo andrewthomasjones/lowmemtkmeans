@@ -15,6 +15,7 @@
 #'@param M matrix (n x m). Rows are observations, columns are predictors.
 #'@param k number of clusters
 #'@param alpha proportion of data to be trimmed
+#'@param weights weightings for variables (columns).
 #'@param nstart number of restarts
 #'@param iter maximum number of iterations
 #'@param tol criteria for algorithm convergence
@@ -25,7 +26,7 @@
 #'@examples
 #'iris_mat <- as.matrix(iris[,1:4])
 #'scale_params<-scale_mat_inplace(iris_mat)
-#'iris_cluster<- tkmeans(iris_mat, 2 , 0.1, 1, 10, 0.001) # 2 clusters
+#'iris_cluster<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001) # 2 clusters
 #'@export
 tkmeans <- function(M, k, alpha, weights = rep(1,ncol(M)),  nstart = 1L, iter = 10L, tol = 0.0001, verbose = FALSE) {
   .Call('tkmeans_tkmeans', PACKAGE = 'tkmeans', M, k, alpha, weights, nstart, iter, tol, verbose)
