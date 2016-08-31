@@ -235,6 +235,8 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
     Rcpp::Rcout << "n starts = " << nstart << " max iterations " << iter <<  " alpha = " << alpha << std::endl;
   }
 
+  //apply weights
+  M=M.each_col() % weights;
 
   arma::mat best_means = init_centres(M, k);
   double temp_BIC = 0.0;
