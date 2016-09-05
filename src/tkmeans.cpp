@@ -67,7 +67,7 @@ arma::vec distCentre(int k, arma::mat ui, arma::mat centres, double lambda, int 
    //store distances
   arma::vec dist =  arma::zeros(k);
 
-  for (unsigned int j=0; j<k; j++)
+  for (int j=0; j<k; j++)
   {
     dist.at(j) = 1.0/k * dmvnorm_arma(ui, centres.row(j), sigma, false)[0];
   }
@@ -81,7 +81,7 @@ arma::vec distCentre2(int k, arma::mat ui, arma::mat centres, double lambda, int
   //store distances
   arma::vec dist =  arma::zeros(k);
 
-  for (unsigned int j=0; j<k; j++)
+  for (int j=0; j<k; j++)
   {
     dist.at(j) = sqrt(arma::sum(arma::pow(centres.row(j) - ui, 2.0)));
   }
@@ -131,7 +131,7 @@ arma::mat init_centres(arma::mat M, int k){
 
   arma::mat cent =  arma::zeros(k,d);
 
-  for(unsigned int i=0; i<k; i++){
+  for(int i=0; i<k; i++){
     //Rcpp::Rcout << "i = " << i << " n = " << B.at(i,0) <<  std::endl;
 
     cent.row(i) = M.row(B.at(i,0));
@@ -243,7 +243,7 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
   double best_BIC = 0.0;
   int best_j = 0;
 
-  for(unsigned int j=0; j<nstart;j++){
+  for( int j=0; j<nstart;j++){
 
     arma::mat centres = init_centres(M, k);
     arma::mat means = centres;
@@ -251,7 +251,7 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
     double lambda = 1;
     //double tol = 0.001;
     double diff = 1;
-    unsigned int m=0;
+    int m=0;
 
     // cluster membership record
     //std::vector<int> cluster_membership;
