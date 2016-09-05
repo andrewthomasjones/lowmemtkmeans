@@ -1,4 +1,4 @@
 library(testthat)
-library(tkmeans)
+library(lowmemtkmeans)
 
-test_check("tkmeans")
+test_check("lowmemtkmeans")

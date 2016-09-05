@@ -29,7 +29,7 @@
 #'iris_cluster<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001) # 2 clusters
 #'@export
 tkmeans <- function(M, k, alpha, weights = rep(1,ncol(M)),  nstart = 1L, iter = 10L, tol = 0.0001, verbose = FALSE) {
-  .Call('tkmeans_tkmeans', PACKAGE = 'tkmeans', M, k, alpha, weights, nstart, iter, tol, verbose)
+  .Call('lowmemtkmeans_tkmeans', PACKAGE = 'lowmemtkmeans', M, k, alpha, weights, nstart, iter, tol, verbose)
 }
 
 
