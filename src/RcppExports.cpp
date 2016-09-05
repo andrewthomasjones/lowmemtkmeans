@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // cluster_BIC
 double cluster_BIC(arma::mat& data, arma::mat& centres);
-RcppExport SEXP tkmeans_cluster_BIC(SEXP dataSEXP, SEXP centresSEXP) {
+RcppExport SEXP lowmemtkmeans_cluster_BIC(SEXP dataSEXP, SEXP centresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // tkmeans
 arma::mat tkmeans(arma::mat& M, int k, double alpha, arma::vec weights, int nstart, int iter, double tol, bool verbose);
-RcppExport SEXP tkmeans_tkmeans(SEXP MSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP weightsSEXP, SEXP nstartSEXP, SEXP iterSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+RcppExport SEXP lowmemtkmeans_tkmeans(SEXP MSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP weightsSEXP, SEXP nstartSEXP, SEXP iterSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -38,7 +38,7 @@ END_RCPP
 }
 // scale_mat_inplace
 arma::mat scale_mat_inplace(arma::mat& M);
-RcppExport SEXP tkmeans_scale_mat_inplace(SEXP MSEXP) {
+RcppExport SEXP lowmemtkmeans_scale_mat_inplace(SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -49,7 +49,7 @@ END_RCPP
 }
 // nearest_cluster
 arma::uvec nearest_cluster(arma::mat& data, arma::mat& centres);
-RcppExport SEXP tkmeans_nearest_cluster(SEXP dataSEXP, SEXP centresSEXP) {
+RcppExport SEXP lowmemtkmeans_nearest_cluster(SEXP dataSEXP, SEXP centresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;

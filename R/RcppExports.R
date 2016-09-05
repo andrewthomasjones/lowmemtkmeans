@@ -25,11 +25,11 @@ NULL
 #'cluster_BIC(iris_mat, iris_centres3)
 #'@export
 cluster_BIC <- function(data, centres) {
-    .Call('tkmeans_cluster_BIC', PACKAGE = 'tkmeans', data, centres)
+    .Call('lowmemtkmeans_cluster_BIC', PACKAGE = 'lowmemtkmeans', data, centres)
 }
 
 tkmeans <- function(M, k, alpha, weights, nstart = 1L, iter = 10L, tol = 0.0001, verbose = FALSE) {
-    .Call('tkmeans_tkmeans', PACKAGE = 'tkmeans', M, k, alpha, weights, nstart, iter, tol, verbose)
+    .Call('lowmemtkmeans_tkmeans', PACKAGE = 'lowmemtkmeans', M, k, alpha, weights, nstart, iter, tol, verbose)
 }
 
 #'@title Rescales a matrix in place.
@@ -47,7 +47,7 @@ tkmeans <- function(M, k, alpha, weights, nstart = 1L, iter = 10L, tol = 0.0001,
 #'sweep(sweep(m,2,scale_params[2,],'*'),2,scale_params [1,], '+') # orginal matrix restored
 #'@export
 scale_mat_inplace <- function(M) {
-    .Call('tkmeans_scale_mat_inplace', PACKAGE = 'tkmeans', M)
+    .Call('lowmemtkmeans_scale_mat_inplace', PACKAGE = 'lowmemtkmeans', M)
 }
 
 #'@title Allocates each rw (observation) in data to the nearest cluster centre.
@@ -62,6 +62,6 @@ scale_mat_inplace <- function(M) {
 #' nearest_cluster(iris_mat, centres)
 #'@export
 nearest_cluster <- function(data, centres) {
-    .Call('tkmeans_nearest_cluster', PACKAGE = 'tkmeans', data, centres)
+    .Call('lowmemtkmeans_nearest_cluster', PACKAGE = 'lowmemtkmeans', data, centres)
 }
 
