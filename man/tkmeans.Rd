@@ -47,6 +47,6 @@ scale_params<-scale_mat_inplace(iris_mat)
 iris_cluster<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001) # 2 clusters
 }
 \references{
-[1] Cuesta-Albertos, J. A., Gordaliza A., and Matran C. "Trimmed K-Means: An Attempt to Robustify Quantizers." The Annals of Statistics 25.2 (1997): 553-76.
+[1] Garcia-Escudero, Luis A.; Gordaliza, Alfonso; Matran, Carlos; Mayo-Iscar, Agustin. A general trimming approach to robust cluster Analysis. Ann. Statist. 36 (2008), no. 3, 1324--1345.
 }
 

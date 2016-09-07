@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-The tkmeans package attempts to implement the trimmed k-means algorithm of García-Escudero, et. al.(2008) using as little memory as possible. Data is editted in place, the trimming is implemented using a priority queue structure in C++ trhough Rcpp and low memory use versions of utility functions are provided.
+The tkmeans package attempts to implement the trimmed k-means algorithm of Garcia-Escudero, et. al.(2008) using as little memory as possible. Data is editted in place, the trimming is implemented using a priority queue structure in C++ trhough Rcpp and low memory use versions of utility functions are provided.
 
 An extremely simple example:  
 1. Convert the iris dataset to a matrix  and rescale matrix columns.
