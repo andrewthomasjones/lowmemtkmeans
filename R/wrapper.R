@@ -22,7 +22,7 @@
 #'@param verbose If true will output more information on algorithm progress.
 #'@return Returns a matrix of cluster means (k x m).
 #'@references
-#' [1] Cuesta-Albertos, J. A., Gordaliza A., and Matran C. "Trimmed K-Means: An Attempt to Robustify Quantizers." The Annals of Statistics 25.2 (1997): 553-76.
+#' [1] García-Escudero, Luis A.; Gordaliza, Alfonso; Matrán, Carlos; Mayo-Iscar, Agustin. A general trimming approach to robust cluster Analysis. Ann. Statist. 36 (2008), no. 3, 1324--1345.
 #'@examples
 #'iris_mat <- as.matrix(iris[,1:4])
 #'scale_params<-scale_mat_inplace(iris_mat)
