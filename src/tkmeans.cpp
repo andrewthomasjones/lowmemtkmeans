@@ -40,17 +40,17 @@ arma::vec Mahalanobis(arma::mat x, arma::rowvec center, arma::mat cov) {
   for (unsigned int i=0; i < n; i++) {
     x_cen.row(i) = x.row(i) - center;
   }
-  return sum((x_cen * cov.i()) % x_cen, 1);
+  return arma::sum((x_cen * cov.i()) % x_cen, 1);
 }
 
 
 
-arma::vec dmvnorm_arma(arma::mat x, arma::rowvec mean, arma::mat sigma, bool log = false) {
+arma::vec dmvnorm_arma(arma::mat x, arma::rowvec mean, arma::mat sigma, bool log_flag = false) {
   arma::vec distval = Mahalanobis(x,  mean, sigma);
-  double logdet = sum(arma::log(arma::eig_sym(sigma)));
+  double logdet = arma::sum(arma::log(arma::eig_sym(sigma)));
   arma::vec logretval = -( (x.n_cols * log2pi + logdet + distval)/2  ) ;
 
-  if (log) {
+  if (log_flag) {
     return(logretval);
   } else {
     return(exp(logretval));
@@ -83,7 +83,7 @@ arma::vec distCentre2(int k, arma::mat ui, arma::mat centres, double lambda, int
 
   for (int j=0; j<k; j++)
   {
-    dist.at(j) = sqrt(arma::sum(arma::pow(centres.row(j) - ui, 2.0)));
+    dist.at(j) = std::sqrt(arma::sum(arma::pow(centres.row(j) - ui, 2.0)));
   }
 
 
@@ -166,7 +166,7 @@ double  cluster_BIC(arma::mat& data, arma::mat& centres){
   unsigned int x = data.n_rows;
   unsigned int m = centres.n_cols;
   unsigned int k = centres.n_rows;
-  double PI_val = log(1./k);
+  double PI_val = log((double)1.0/k);
 
 
   if(data.n_cols!=m){
@@ -187,7 +187,7 @@ double  cluster_BIC(arma::mat& data, arma::mat& centres){
         -0.5*(arma::accu(arma::pow(data.row(i),2.))
         + arma::accu(arma::pow(centres.row(j),2.))
         - 2.*dot(data.row(i),centres.row(j)))
-        - (m/2.)*log(2.*M_PI) - log(m)/2. + PI_val;
+        - (m/2.)*log2pi - log((double)m)/2. + PI_val;
 
     }
 
@@ -196,7 +196,7 @@ double  cluster_BIC(arma::mat& data, arma::mat& centres){
 
     temp_row = temp_row - temp_max;
 
-    double log_like = temp_max + log(arma::accu(arma::exp(temp_row)));
+    double log_like = temp_max + std::log(arma::accu(arma::exp(temp_row)));
     //Rcpp::Rcout <<  log_like << std::endl;
     log_like_accum += log_like;
   }
@@ -204,7 +204,7 @@ double  cluster_BIC(arma::mat& data, arma::mat& centres){
   //Rcpp::Rcout <<  log_like_accum << std::endl;
 
 
-  return -2*log_like_accum  + log(x)*(m*k + k - 1);
+  return -2*log_like_accum  + std::log((double)x)*(m*k + k - 1);
 }
 
 
