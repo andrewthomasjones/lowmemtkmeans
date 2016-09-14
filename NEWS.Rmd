@@ -3,6 +3,10 @@ output:
   md_document:
     variant: markdown_github
 ---
+# tkmeans 0.1.1
+
+Bug fix for Solaris.
+
 # tkmeans 0.1.0
 
 First version of the package. See README.md for details.
