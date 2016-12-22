@@ -326,7 +326,7 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
         if(centre_members.min() > 0) {
           means = new_centres.each_col() / centre_members;
         }else{
-          Rcpp::Rcout << "Empty cluster, resetting centres with " << iter-m << " iterations remaining." << std::endl;
+          if(verbose){Rcpp::Rcout << "Empty cluster, resetting centres with " << iter-m << " iterations remaining." << std::endl;}
           means = init_centres(M, k);
         }
 
@@ -401,7 +401,7 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
         if(centre_members.min() > 0) {
             means = new_centres.each_col() / centre_members;
         }else{
-            Rcpp::Rcout << "Empty cluster, resetting centres with " << iter-m << " iterations remaining." << std::endl;
+          if(verbose){Rcpp::Rcout << "Empty cluster, resetting centres with " << iter-m << " iterations remaining." << std::endl;}
             means = init_centres(M, k);
         }
 
