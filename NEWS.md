@@ -1,4 +1,4 @@
-tkmeans 0.1.0
+lowmemtkmeans 0.1.2
 =============
 
-First version of the package. See README.md for details.
+Bug in initial cluster centre randomization fixed.
