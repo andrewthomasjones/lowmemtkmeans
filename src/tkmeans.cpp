@@ -122,12 +122,16 @@ int min_index(arma::vec x){
 
 
 
-arma::mat init_centres(arma::mat M, int k){
+arma::mat init_centres(arma::mat M, int k, bool verbose){
   int n = size(M)[0];
   int d = size(M)[1];
 
+  // if(verbose){
+  //   Rcpp::Rcout << "Randomly initialising centres..." << std::endl;
+  // }
+
   //randomly pick centres
-  arma::mat B = arma::randi<arma::mat>(k,1,arma::distr_param(0,n));
+  arma::mat B = arma::randi<arma::mat>(k,1,arma::distr_param(0,n-1));
 
   arma::mat cent =  arma::zeros(k,d);
 
@@ -238,14 +242,18 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
   //apply weights
   M.each_row() /= weights.t();
 
-  arma::mat best_means = init_centres(M, k);
+  arma::mat best_means = init_centres(M, k, verbose);
   double temp_BIC = 0.0;
   double best_BIC = 0.0;
   int best_j = 0;
 
   for( int j=0; j<nstart;j++){
 
-    arma::mat centres = init_centres(M, k);
+    if(verbose){
+      Rcpp::Rcout << j+1 << " of " << nstart<< " starts." << std::endl;
+    }
+
+    arma::mat centres = init_centres(M, k, verbose);
     arma::mat means = centres;
 
     double lambda = 1;
@@ -263,10 +271,17 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
     unsigned int queue_len;
     if(alpha<=0.5){
 
+
+
+
       if(alpha != 0.0){
         queue_len = floor((n-1)*(alpha))+1;
       }else{
         queue_len = 0;
+      }
+
+      if(verbose){
+        Rcpp::Rcout << "Removing " << alpha << " of points. Discard que length " <<   queue_len << std::endl;
       }
 
 
@@ -274,7 +289,9 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
       //Rcpp::Rcout << "Begin main loop..."  << std::endl;
 
 
+
       while((m<iter) & (diff > tol)){
+
 
         //Rcpp::Rcout << m << " of " << iter  << " iterations" << std::endl;
 
@@ -329,7 +346,7 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
           if(verbose){
               Rcpp::Rcout << "Empty cluster, resetting centres with " << iter-m << " iterations remaining." << std::endl;
             }
-          means = init_centres(M, k);
+          means = init_centres(M, k, verbose);
         }
 
         //centre_members.print();
@@ -338,6 +355,9 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
         diff = arma::accu(arma::abs(centres-means));
         centres = means;
         m++;
+        if(verbose){
+          Rcpp::Rcout << "iteration  " << m << " of " << iter <<  ". diff > tol :  " << diff << " > " << tol << std::endl;
+        }
       }
     }
     else{
@@ -406,7 +426,7 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
           if(verbose){
             Rcpp::Rcout << "Empty cluster, resetting centres with " << iter-m << " iterations remaining." << std::endl;
           }
-          means = init_centres(M, k);
+          means = init_centres(M, k, verbose);
         }
 
         //centre_members.print();
@@ -415,6 +435,10 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
         diff = arma::accu(arma::abs(centres-means));
         centres = means;
         m++;
+
+        if(verbose){
+          Rcpp::Rcout << "iteration  " << m << " of " << iter <<  ". diff > tol :  " << diff << " > " << tol << std::endl;
+        }
       }
     }
 
