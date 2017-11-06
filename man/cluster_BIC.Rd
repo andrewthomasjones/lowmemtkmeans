@@ -30,4 +30,3 @@ iris_centres3 <- tkmeans(iris_mat, 3 , 0.1, c(1,1,1,1), 1, 10, 0.001) # 3 cluste
 cluster_BIC(iris_mat, iris_centres2)
 cluster_BIC(iris_mat, iris_centres3)
 }
-

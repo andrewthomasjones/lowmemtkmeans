@@ -87,6 +87,7 @@ arma::vec distCentre2(int k, arma::mat ui, arma::mat centres, double lambda, int
   }
 
 
+  dist.elem(find_nonfinite(dist)).fill(arma::datum::inf);
   return(dist);
 }
 
@@ -212,7 +213,36 @@ double  cluster_BIC(arma::mat& data, arma::mat& centres){
 }
 
 
-
+//'@title Trimmed k-means clustering
+//'@description
+//'Performs trimmed k-means clustering algorithm [1] on a matrix of data. Each row  in the data is an observation, each column is  a variable.
+//'For optimal use columns should be scaled to have the same means and variances using \code{scale_mat_inplace}.
+//'@details
+//'k is the number of clusters. alpha is the proportion of data that will be excluded in the clustering.
+//'
+//'Algorithm will halt if either maximum number of iterations is reached or the change between iterations drops below tol.
+//'
+//'When n_starts is greater than 1, the algorithm will run multiple times and the result with the best BIC will be returned.
+//'The centres are intialised by picking k observations.
+//'
+//'The function only returns the k cluster centres. To calculate the nearest cluster centre for each observation use the function \code{nearest_cluster}.
+//'
+//'@param M matrix (n x m). Rows are observations, columns are predictors.
+//'@param k number of clusters
+//'@param alpha proportion of data to be trimmed
+//'@param weights weightings for variables (columns).
+//'@param nstart number of restarts
+//'@param iter maximum number of iterations
+//'@param tol criteria for algorithm convergence
+//'@param verbose If true will output more information on algorithm progress.
+//'@return Returns a matrix of cluster means (k x m).
+//'@references
+//' [1] Garcia-Escudero, Luis A.; Gordaliza, Alfonso; Matran, Carlos; Mayo-Iscar, Agustin. A general trimming approach to robust cluster Analysis. Ann. Statist. 36 (2008), no. 3, 1324--1345.
+//'@examples
+//'iris_mat <- as.matrix(iris[,1:4])
+//'scale_params<-scale_mat_inplace(iris_mat)
+//'iris_cluster<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001) // 2 clusters
+//'@export
 // [[Rcpp::export]]
 arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int nstart = 1, int iter = 10, double tol = 0.0001, bool verbose = false){
   unsigned int n = size(M)[0];
@@ -221,10 +251,10 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
   if(weights.n_elem!=d){
     stop("weights vector must be same length as number of columns in M.");
   }
-
-  if((alpha>=1) | (alpha <=0)){
-    stop("alpha must be in (0,1).");
-  }
+//
+//   if((alpha>=1) | (alpha <=0)){
+//     stop("alpha must be in (0,1).");
+//   }
 
   if(nstart<1){
     stop("Number of starts must be at least 1.");
@@ -307,9 +337,11 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
 
           di_pair temp = di_pair(Dc.at(cluster), cluster, i);
 
-          new_centres.row(cluster) =  new_centres.row(cluster)+ M.row(i);
-          centre_members(cluster,0) =  centre_members(cluster,0) + 1;
+          if(M.row(i).is_finite()){
+            new_centres.row(cluster) =  new_centres.row(cluster)+ M.row(i);
 
+          }
+          centre_members(cluster,0) =  centre_members(cluster,0) + 1;
           if(queue_len > 0){
             if(smallest.size() < queue_len){
               smallest.push(temp);
@@ -330,10 +362,14 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
 
           while (!smallest.empty())
           {
-            new_centres.row(std::get<1>(smallest.top())) = new_centres.row(std::get<1>(smallest.top())) - M.row(std::get<2>(smallest.top()));
+            int temp1 = std::get<1>(smallest.top());
+            int temp2 = std::get<2>(smallest.top());
 
-            centre_members(std::get<1>(smallest.top()),0) = centre_members(std::get<1>(smallest.top()),0) - 1;
+            if(M.row(temp2).is_finite()){
+              new_centres.row(temp1) = new_centres.row(temp1) - M.row(temp2);
 
+            }
+            centre_members(temp1,0) = centre_members(temp1,0) - 1;
             //Rcpp::Rcout << " " << std::get<0>(smallest.top()) <<  " " << std::get<1>(smallest.top()) << " " << std::get<2>(smallest.top()) << std::endl;
 
             smallest.pop();

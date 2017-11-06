@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // cluster_BIC
 double cluster_BIC(arma::mat& data, arma::mat& centres);
-RcppExport SEXP lowmemtkmeans_cluster_BIC(SEXP dataSEXP, SEXP centresSEXP) {
+RcppExport SEXP _lowmemtkmeans_cluster_BIC(SEXP dataSEXP, SEXP centresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // tkmeans
 arma::mat tkmeans(arma::mat& M, int k, double alpha, arma::vec weights, int nstart, int iter, double tol, bool verbose);
-RcppExport SEXP lowmemtkmeans_tkmeans(SEXP MSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP weightsSEXP, SEXP nstartSEXP, SEXP iterSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+RcppExport SEXP _lowmemtkmeans_tkmeans(SEXP MSEXP, SEXP kSEXP, SEXP alphaSEXP, SEXP weightsSEXP, SEXP nstartSEXP, SEXP iterSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -38,7 +38,7 @@ END_RCPP
 }
 // scale_mat_inplace
 arma::mat scale_mat_inplace(arma::mat& M);
-RcppExport SEXP lowmemtkmeans_scale_mat_inplace(SEXP MSEXP) {
+RcppExport SEXP _lowmemtkmeans_scale_mat_inplace(SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -49,7 +49,7 @@ END_RCPP
 }
 // nearest_cluster
 arma::uvec nearest_cluster(arma::mat& data, arma::mat& centres);
-RcppExport SEXP lowmemtkmeans_nearest_cluster(SEXP dataSEXP, SEXP centresSEXP) {
+RcppExport SEXP _lowmemtkmeans_nearest_cluster(SEXP dataSEXP, SEXP centresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -58,4 +58,17 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(nearest_cluster(data, centres));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_lowmemtkmeans_cluster_BIC", (DL_FUNC) &_lowmemtkmeans_cluster_BIC, 2},
+    {"_lowmemtkmeans_tkmeans", (DL_FUNC) &_lowmemtkmeans_tkmeans, 8},
+    {"_lowmemtkmeans_scale_mat_inplace", (DL_FUNC) &_lowmemtkmeans_scale_mat_inplace, 1},
+    {"_lowmemtkmeans_nearest_cluster", (DL_FUNC) &_lowmemtkmeans_nearest_cluster, 2},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_lowmemtkmeans(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
