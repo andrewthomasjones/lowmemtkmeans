@@ -2,6 +2,20 @@
 output: github_document
 ---
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+[![Travis-CI Build Status](https://travis-ci.org/andrewthomasjones/lowmemtkmeans.svg?branch=master)](https://travis-ci.org/andrewthomasjones/lowmemtkmeans)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/lowmemtkmeans)](https://cran.r-project.org/package=lowmemtkmeans)
+
+# lowmemtkmeans
+
 The tkmeans package attempts to implement the trimmed k-means algorithm of Garcia-Escudero, et. al.(2008) using as little memory as possible. Data is editted in place, the trimming is implemented using a priority queue structure in C++ trhough Rcpp and low memory use versions of utility functions are provided.
 
 An extremely simple example:  
@@ -39,10 +53,4 @@ library(devtools)
 install_github("andrewthomasjones/tkmeans")  
 ```  
 
-```{r, echo = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-"
-)
-```
+

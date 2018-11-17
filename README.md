@@ -1,34 +1,57 @@
 
-The tkmeans package attempts to implement the trimmed k-means algorithm of García-Escudero, et. al.(2008) using as little memory as possible. Data is editted in place, the trimming is implemented using a priority queue structure in C++ trhough Rcpp and low memory use versions of utility functions are provided.
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-An extremely simple example:
-1. Convert the iris dataset to a matrix and rescale matrix columns.
+[![Travis-CI Build
+Status](https://travis-ci.org/andrewthomasjones/lowmemtkmeans.svg?branch=master)](https://travis-ci.org/andrewthomasjones/lowmemtkmeans)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/lowmemtkmeans)](https://cran.r-project.org/package=lowmemtkmeans)
+
+# lowmemtkmeans
+
+The tkmeans package attempts to implement the trimmed k-means algorithm
+of Garcia-Escudero, et. al.(2008) using as little memory as possible.
+Data is editted in place, the trimming is implemented using a priority
+queue structure in C++ trhough Rcpp and low memory use versions of
+utility functions are provided.
+
+An extremely simple example:  
+1\. Convert the iris dataset to a matrix and rescale matrix columns.
 
     iris_mat <- as.matrix(iris[,1:4])
     scale_params<-scale_mat_inplace(iris_mat)
 
-1.  Cluster with 2 and 3 clusters, 10% trimming
+2.  Cluster with 2 and 3 clusters, 10%
+    trimming  
 
-        iris_cluster_2<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001)  
-        iris_cluster_3<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001)
+<!-- end list -->
 
-2.  Calculate BIC
+    iris_cluster_2<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001)  
+    iris_cluster_3<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001)
 
-        BIC_2 <-cluster_BIC(iris_mat, iris_cluster_2)  
-        BIC_3 <-cluster_BIC(iris_mat, iris_cluster_3)
+3.  Calculate BIC  
 
-3.  Allocate using 3 clustering
+<!-- end list -->
 
-        clustering <- nearest_cluster(iris_mat, iris_cluster_3)
+    BIC_2 <-cluster_BIC(iris_mat, iris_cluster_2)  
+    BIC_3 <-cluster_BIC(iris_mat, iris_cluster_3)
 
-4.  Plot results using reconstructed matrix
+4.  Allocate using 3 clustering  
 
-        library(lattice) 
-        orig_matrix <- sweep(sweep(m,2,scale_params[2,],'*'),2,scale_params [1,], '+')  
-        xyplot(orig_matrix[,1]~orig_matrix[,2], group=clustering) 
+<!-- end list -->
+
+    clustering <- nearest_cluster(iris_mat, iris_cluster_3)
+
+5.  Plot results using reconstructed matrix
+
+<!-- end list -->
+
+    library(lattice) 
+    orig_matrix <- sweep(sweep(m,2,scale_params[2,],'*'),2,scale_params [1,], '+')  
+    xyplot(orig_matrix[,1]~orig_matrix[,2], group=clustering) 
 
 To install the latest version:
 
-    install.packages("devtools")  
-    library(devtools)  
-    install_github("andrewthomasjones/tkmeans")
+``` 
+install.packages("devtools")  
+library(devtools)  
+install_github("andrewthomasjones/tkmeans")  
+```
