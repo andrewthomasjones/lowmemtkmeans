@@ -56,7 +56,7 @@ cluster_BIC <- function(data, centres) {
 #'@examples
 #'iris_mat <- as.matrix(iris[,1:4])
 #'scale_params<-scale_mat_inplace(iris_mat)
-#'iris_cluster<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001) // 2 clusters
+#'iris_cluster<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001) # 2 clusters
 #'@export
 tkmeans <- function(M, k, alpha, weights, nstart = 1L, iter = 10L, tol = 0.0001, verbose = FALSE) {
     .Call('_lowmemtkmeans_tkmeans', PACKAGE = 'lowmemtkmeans', M, k, alpha, weights, nstart, iter, tol, verbose)

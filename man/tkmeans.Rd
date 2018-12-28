@@ -44,7 +44,7 @@ The function only returns the k cluster centres. To calculate the nearest cluste
 \examples{
 iris_mat <- as.matrix(iris[,1:4])
 scale_params<-scale_mat_inplace(iris_mat)
-iris_cluster<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001) // 2 clusters
+iris_cluster<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001) # 2 clusters
 }
 \references{
 [1] Garcia-Escudero, Luis A.; Gordaliza, Alfonso; Matran, Carlos; Mayo-Iscar, Agustin. A general trimming approach to robust cluster Analysis. Ann. Statist. 36 (2008), no. 3, 1324--1345.
