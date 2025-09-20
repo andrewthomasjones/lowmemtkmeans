@@ -1,7 +1,7 @@
 Package: lowmemtkmeans
 Type: Package
 Title: Low Memory Use Trimmed K-Means
-Version: 0.1.3
+Version: 0.1.4
 Author: Andrew Thomas Jones, Hien Duy Nguyen
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
 Description: Performs the trimmed k-means clustering algorithm with lower memory use. It also provides a number of utility functions such as BIC calculations.
@@ -10,6 +10,6 @@ LazyData: TRUE
 LinkingTo: Rcpp, RcppArmadillo
 Imports:
     Rcpp (>= 0.12.5)
-SystemRequirements: C++11
-RoxygenNote: 6.0.1
+RoxygenNote: 7.3.3
+Encoding: UTF-8
 Suggests: testthat
