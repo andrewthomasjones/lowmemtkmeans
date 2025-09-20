@@ -6,3 +6,4 @@
 ^NEWS\.Rmd$
 ^\.travis\.yml$
 .github/*
+^CRAN-SUBMISSION$
