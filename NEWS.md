@@ -1,9 +1,11 @@
-lowmemtkmeans 0.1.3
-=============
+# tkmeans 0.1.4
 
-Now handles NA values as expected in all cases (i.e trims them from groups)
+Update to be compatible with modern C++.
 
-lowmemtkmeans 0.1.2
-=============
+# tkmeans 0.1.1
 
-Bug in initial cluster centre randomization fixed.
+Bug fix for Solaris.
+
+# tkmeans 0.1.0
+
+First version of the package. See README.md for details.
