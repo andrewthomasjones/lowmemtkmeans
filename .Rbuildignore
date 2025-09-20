@@ -5,4 +5,4 @@
 ^README-.*\.png$
 ^NEWS\.Rmd$
 ^\.travis\.yml$
-.github
+.github/*
