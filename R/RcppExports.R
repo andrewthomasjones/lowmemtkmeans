@@ -2,7 +2,7 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #'@importFrom Rcpp sourceCpp
-#'@useDynLib lowmemtkmeans
+#'@useDynLib lowmemtkmeans, .registration = TRUE
 NULL
 
 #'@title Calculates BIC for a given clustering.
@@ -25,7 +25,7 @@ NULL
 #'cluster_BIC(iris_mat, iris_centres3)
 #'@export
 cluster_BIC <- function(data, centres) {
-    .Call('_lowmemtkmeans_cluster_BIC', PACKAGE = 'lowmemtkmeans', data, centres)
+    .Call(`_lowmemtkmeans_cluster_BIC`, data, centres)
 }
 
 #'@title Trimmed k-means clustering
@@ -59,7 +59,7 @@ cluster_BIC <- function(data, centres) {
 #'iris_cluster<- tkmeans(iris_mat, 2 , 0.1, c(1,1,1,1), 1, 10, 0.001) # 2 clusters
 #'@export
 tkmeans <- function(M, k, alpha, weights, nstart = 1L, iter = 10L, tol = 0.0001, verbose = FALSE) {
-    .Call('_lowmemtkmeans_tkmeans', PACKAGE = 'lowmemtkmeans', M, k, alpha, weights, nstart, iter, tol, verbose)
+    .Call(`_lowmemtkmeans_tkmeans`, M, k, alpha, weights, nstart, iter, tol, verbose)
 }
 
 #'@title Rescales a matrix in place.
@@ -77,7 +77,7 @@ tkmeans <- function(M, k, alpha, weights, nstart = 1L, iter = 10L, tol = 0.0001,
 #'sweep(sweep(m,2,scale_params[2,],'*'),2,scale_params [1,], '+') # orginal matrix restored
 #'@export
 scale_mat_inplace <- function(M) {
-    .Call('_lowmemtkmeans_scale_mat_inplace', PACKAGE = 'lowmemtkmeans', M)
+    .Call(`_lowmemtkmeans_scale_mat_inplace`, M)
 }
 
 #'@title Allocates each rw (observation) in data to the nearest cluster centre.
@@ -92,6 +92,6 @@ scale_mat_inplace <- function(M) {
 #' nearest_cluster(iris_mat, centres)
 #'@export
 nearest_cluster <- function(data, centres) {
-    .Call('_lowmemtkmeans_nearest_cluster', PACKAGE = 'lowmemtkmeans', data, centres)
+    .Call(`_lowmemtkmeans_nearest_cluster`, data, centres)
 }
 
