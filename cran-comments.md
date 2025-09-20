@@ -1,7 +1,7 @@
 ## Test environments
-* Mac OS X, R 3.3.2
-* Windows 10, R 3.3.2
-* ubuntu 14.04,, R 3.3.2 (devel and release)
+* macos-13 on GitHub, R-* via rhub
+* windows-latest on GitHub, R-* via rhub
+* ubuntu-latest on GitHub, R-* via rhub
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
