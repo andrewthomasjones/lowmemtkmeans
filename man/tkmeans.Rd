@@ -4,8 +4,16 @@
 \alias{tkmeans}
 \title{Trimmed k-means clustering}
 \usage{
-tkmeans(M, k, alpha, weights, nstart = 1L, iter = 10L, tol = 1e-04,
-  verbose = FALSE)
+tkmeans(
+  M,
+  k,
+  alpha,
+  weights,
+  nstart = 1L,
+  iter = 10L,
+  tol = 1e-04,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{M}{matrix (n x m). Rows are observations, columns are predictors.}

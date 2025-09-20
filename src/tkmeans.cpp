@@ -504,10 +504,10 @@ arma::mat tkmeans(arma::mat& M, int k , double alpha, arma::vec weights,  int ns
 
 //'@title Rescales a matrix in place.
 //'@description
-//'Recales matrix so that each column has a mean of 0 and a standard deviation of 1.
+//'Rescales matrix so that each column has a mean of 0 and a standard deviation of 1.
 //'The original matrix is overwritten in place. The function returns the means and standard deviations of each column used to rescale it.
 //'@details
-//'The key advantage of this method is that it can be applied to very large matrices without having to make a second copy in memory and the orginal can still be restored using the saved information.
+//'The key advantage of this method is that it can be applied to very large matrices without having to make a second copy in memory and the original can still be restored using the saved information.
 //'
 //'@param M matrix of data (n x m)
 //'@return Returns a matrix of size (2 x m). The first row contains the column means. The second row contains the column standard dveiations. NOTE: The original matrix, M, is overwritten.
@@ -542,7 +542,7 @@ arma::mat scale_mat_inplace(arma::mat& M){
 //'@description
 //'For each observation the euclidean distance to each of the cluster centres is calculated and cluster with the smallest distance is return for that observation.
 //'@param data a matrix (n x m) to be clustered
-//'@param centres matrix of cluster means (k x m), wher k is the number of clusters.
+//'@param centres matrix of cluster means (k x m), where k is the number of clusters.
 //'@return vector of cluster allocations, n values ranging from 1 to k.
 //'@examples
 //'iris_mat <- as.matrix(iris[,1:4])

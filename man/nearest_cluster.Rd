@@ -9,7 +9,7 @@ nearest_cluster(data, centres)
 \arguments{
 \item{data}{a matrix (n x m) to be clustered}
 
-\item{centres}{matrix of cluster means (k x m), wher k is the number of clusters.}
+\item{centres}{matrix of cluster means (k x m), where k is the number of clusters.}
 }
 \value{
 vector of cluster allocations, n values ranging from 1 to k.
